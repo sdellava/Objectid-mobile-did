@@ -1,7 +1,8 @@
-import React from 'react';
-import { Provider as PaperProvider, MD3LightTheme } from 'react-native-paper';
+// App.tsx
+import React, { useCallback, useEffect, useState } from 'react';
+import { Provider as PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import AppLoading from 'expo-app-loading';
+import * as SplashScreen from 'expo-splash-screen';
 import {
   useFonts,
   Roboto_100Thin,
@@ -9,18 +10,32 @@ import {
   Roboto_400Regular,
   Roboto_500Medium,
 } from '@expo-google-fonts/roboto';
-import Main from './Main'; 
 import { theme } from './theme';
+import Main from './Main';
 
+// Evita che lo splash scompaia automaticamente
+SplashScreen.preventAutoHideAsync();
 
 export default function App() {
-  const [loaded] = useFonts({
+  const [fontsLoaded] = useFonts({
     Roboto_100Thin,
     Roboto_300Light,
     Roboto_400Regular,
     Roboto_500Medium,
   });
-  if (!loaded) return <AppLoading />;
+  const [isReady, setIsReady] = useState(false);
+
+  // Quando i font sono pronti, nascondi lo splash
+  useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync().then(() => setIsReady(true));
+    }
+  }, [fontsLoaded]);
+
+  // Finché non siamo pronti non renderizzo nulla (rimane lo splash)
+  if (!isReady) {
+    return null;
+  }
 
   return (
     <SafeAreaProvider>
