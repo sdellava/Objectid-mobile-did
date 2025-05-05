@@ -1,5 +1,5 @@
 // App.tsx
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as SplashScreen from 'expo-splash-screen';
@@ -13,7 +13,15 @@ import {
 import { theme } from './theme';
 import Main from './Main';
 
-// Evita che lo splash scompaia automaticamente
+import { init } from "@iota/identity-wasm/web";
+
+import wasmUrl from "@iota/identity-wasm/web/identity_wasm_bg.wasm?url";
+
+init(wasmUrl).then(() => {
+  console.log("init");
+});
+
+
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
@@ -25,14 +33,12 @@ export default function App() {
   });
   const [isReady, setIsReady] = useState(false);
 
-  // Quando i font sono pronti, nascondi lo splash
   useEffect(() => {
     if (fontsLoaded) {
       SplashScreen.hideAsync().then(() => setIsReady(true));
     }
   }, [fontsLoaded]);
 
-  // Finché non siamo pronti non renderizzo nulla (rimane lo splash)
   if (!isReady) {
     return null;
   }
