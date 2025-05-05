@@ -33,7 +33,14 @@ export default function Main() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView
+    contentContainerStyle={{
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 20,
+    }}
+  >
       <Text variant="headlineMedium" style={styles.heading}>
         Distributed Identifier (DID)
       </Text>
