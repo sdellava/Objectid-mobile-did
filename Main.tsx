@@ -5,21 +5,27 @@ import { TextInput, Button, Text, Card } from 'react-native-paper';
 import { init } from "@iota/identity-wasm/web";
 import { useAssets } from 'expo-asset';
 
+import { IdentityClientReadOnly, IotaDID } from '@iota/identity-wasm/web';
+import { getFullnodeUrl, IotaClient } from '@iota/iota-sdk/client';
+
 export default function Main() {
   
   const [assets, error] = useAssets([
     require('@iota/identity-wasm/web/identity_wasm_bg.wasm')
   ]);
+  
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
     console.log(assets, error);
 
     if(!assets) return;
     
-    console.log(assets?.at(0)?.uri);
+    console.log(assets?.at(0)?.localUri);
     
-    init(assets?.at(0)?.uri).then(() => {
+    init(assets?.at(0)?.localUri ?? "").then(() => {
       console.log("init");
+      setInitialized(true);
     });
   }, [assets, error])
   
@@ -27,21 +33,15 @@ export default function Main() {
   const [did, setDid] = useState('');
   const [result, setResult] = useState<string>('');
   const network = 'testnet';
-  const identityPackageID = '0x2227…cc555';
 
   const handleResolve = async () => {
     setResult('Resolving…'); // messaggio di attesa
     try {
-      const { init, IdentityClientReadOnly, IotaDID } =
-        await import('@iota/identity-wasm/web');
-      const wasmUrl = require('@iota/identity-wasm/web/identity_wasm_bg.wasm');
-      await init(wasmUrl);
 
-      const { getFullnodeUrl, IotaClient } = await import('@iota/iota-sdk/client');
       const client = new IotaClient({ url: getFullnodeUrl(network) });
 
-      const identityClientReadOnly =
-        await IdentityClientReadOnly.createWithPkgId(client, identityPackageID);
+      const identityClientReadOnly = await IdentityClientReadOnly.create(client);
+      
       const iotaDid = IotaDID.fromAliasId(did, network);
       const didDocument = await identityClientReadOnly.resolveDid(iotaDid);
 
@@ -70,6 +70,7 @@ export default function Main() {
       <Button
         mode="contained"
         onPress={handleResolve}
+        loading={!initialized}
         disabled={did.trim() === ''}
         style={styles.button}
       >
