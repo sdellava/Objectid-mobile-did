@@ -13,16 +13,6 @@ import {
 import { theme } from './theme';
 import Main from './Main';
 
-
-import { init } from "@iota/identity-wasm/web";
-
-import wasmUrl from "@iota/identity-wasm/web/identity_wasm_bg.wasm?url";
-
-init(wasmUrl).then(() => {
-  console.log("init");
-});
-
-
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {

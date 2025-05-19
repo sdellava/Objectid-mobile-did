@@ -1,9 +1,29 @@
 // Main.tsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { TextInput, Button, Text, Card } from 'react-native-paper';
+import { init } from "@iota/identity-wasm/web";
+import { useAssets } from 'expo-asset';
 
 export default function Main() {
+  
+  const [assets, error] = useAssets([
+    require('@iota/identity-wasm/web/identity_wasm_bg.wasm')
+  ]);
+
+  useEffect(() => {
+    console.log(assets, error);
+
+    if(!assets) return;
+    
+    console.log(assets?.at(0)?.uri);
+    
+    init(assets?.at(0)?.uri).then(() => {
+      console.log("init");
+    });
+  }, [assets, error])
+  
+
   const [did, setDid] = useState('');
   const [result, setResult] = useState<string>('');
   const network = 'testnet';
