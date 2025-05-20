@@ -1,0 +1,1 @@
+    //"postinstall": "npm --prefix ./assets/IdentityApp i",
