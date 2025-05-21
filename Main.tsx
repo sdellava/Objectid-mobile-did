@@ -10,8 +10,13 @@ import IdentityWebView, { postMessage } from "./IdentityWebView";
 export default function Main() {
   const [did, setDid] = useState("0x12d98414a107efcc099e8954b12573a5f4d70701f5881cebbf543b59261ceecb");
   const [result, setResult] = useState<string>("");
+  const [seed, setSeed] = useState("");
+
   const initialized = useBridge(appBridge, (state) => state.initialized);
   const resolvedDID = useBridge(appBridge, (state) => state.resolvedDID);
+  const createdDID = useBridge(appBridge, (state) => state.createDID);
+
+  const network = "testnet";
 
   useEffect(() => {
     if (!resolvedDID) return;
@@ -22,6 +27,24 @@ export default function Main() {
     setResult("Resolving…"); // messaggio di attesa
     try {
       postMessage("resolve", did);
+    } catch (e: any) {
+      setResult(`Error: ${e.message ?? e.toString()}`);
+    }
+  };
+
+  useEffect(() => {
+    if (!createdDID) return;
+    setDid(createdDID.toString());
+    setResult("");
+  }, [createdDID]);
+
+  const handleCreate = async () => {
+    setResult("Creating…");
+    try {
+      postMessage("create", {
+        seed,
+        network,
+      });
     } catch (e: any) {
       setResult(`Error: ${e.message ?? e.toString()}`);
     }

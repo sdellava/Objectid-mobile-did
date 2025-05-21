@@ -15,8 +15,8 @@ interface AppBridgeState extends Bridge {
   setInitialized(): Promise<void>;
   initialized: boolean;
   resolvedDID: string;
-  setCreatedDID(DID: string): Promise<void>; // 👈 AGGIUNGI QUESTA
-  createdDID: string; // 👈 AGGIUNGI QUESTA SE TI SERVE MEMORIZZARE IL DID
+  setCreatedDID(DID: string): Promise<void>;
+  createdDID: string;
 }
 
 export const appBridge = bridge<AppBridgeState>(({ set }) => ({
@@ -37,6 +37,11 @@ export const appBridge = bridge<AppBridgeState>(({ set }) => ({
   createdDID: "",
 }));
 
+interface CreateMessage {
+  seed: string;
+  network: string;
+}
+
 // Export the bridge type to be used in the web application
 export type AppBridge = typeof appBridge;
 
@@ -46,6 +51,9 @@ export const appPostMessageSchema = postMessageSchema({
   },
   resolve: {
     validate: (data) => data as string, // This is not recommended; please use validation libraries like zod or valibot.
+  },
+  create: {
+    validate: (data) => data as CreateMessage, // This is not recommended; please use validation libraries like zod or valibot.
   },
 });
 
