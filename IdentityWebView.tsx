@@ -14,7 +14,8 @@ export const { WebView, postMessage } = createWebView({
 export default function IdentityWebView() {
 
   const [WasmAssets, WasmError] = useAssets([
-    require('@iota/identity-wasm/web/identity_wasm_bg.wasm')
+    // load Wasm binary from WebApp to provide to WebApp initialization
+    require('./assets/IdentityApp/node_modules/@iota/identity-wasm/web/identity_wasm_bg.wasm')
   ]);
 
   const [assets, error] = useAssets([
