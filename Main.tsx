@@ -59,6 +59,15 @@ export default function Main() {
         </Text>
 
         <TextInput
+          label="SEED:"
+          value={seed}
+          onChangeText={setSeed}
+          style={styles.input}
+          mode="outlined"
+          placeholder="...."
+        />
+
+        <TextInput
           label="DID:"
           value={did}
           onChangeText={setDid}
@@ -66,6 +75,16 @@ export default function Main() {
           mode="outlined"
           placeholder="0x…"
         />
+
+        <Button
+          mode="contained"
+          onPress={handleCreate}
+          loading={!initialized}
+          disabled={seed.trim() === ""}
+          style={styles.button}
+        >
+          Create DID
+        </Button>
 
         <Button
           mode="contained"
