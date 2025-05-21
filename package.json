@@ -13,7 +13,7 @@
     "@babel/runtime": "^7.27.1",
     "@expo-google-fonts/roboto": "^0.3.0",
     "@expo/metro-runtime": "~5.0.4",
-    "@iota/identity-wasm": "^1.6.0-alpha.5",
+    "@iota/identity-wasm": "^1.6.0-alpha.7",
     "@iota/iota-sdk": "^1.0.1",
     "@webview-bridge/react-native": "^1.7.7",
     "expo": "^53.0.7",

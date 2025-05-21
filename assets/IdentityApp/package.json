@@ -14,7 +14,7 @@
     "vite-plugin-singlefile": "^2.2.0"
   },
   "dependencies": {
-    "@iota/identity-wasm": "^1.6.0-alpha.5",
+    "@iota/identity-wasm": "^1.6.0-alpha.7",
     "@iota/iota-sdk": "^1.0.1",
     "@webview-bridge/web": "^1.7.7"
   }

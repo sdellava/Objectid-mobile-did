@@ -15,7 +15,10 @@ window.addEventListener("create", async (event: any) => {
     const client = new IotaClient({ url: getFullnodeUrl(network) });
     const identityClient = await getIdentityFromKeyPair(client, storage, keyPair, JwsAlgorithm.EdDSA);
     const [unpublished] = await createDocumentForNetworkUsingKeyPair(storage, network, keyPair);
-    const { output: identity } = await identityClient.createIdentity(unpublished).finish().execute(identityClient);
+    const { output: identity } = await identityClient
+      .createIdentity(unpublished)
+      .finish()
+      .buildAndExecute(identityClient);
     const didDocument = identity.didDocument();
     window.dispatchEvent(new CustomEvent("setCreatedDID", { detail: didDocument }));
   } catch (error: any) {
@@ -90,6 +93,8 @@ bridge.addEventListener("create", async (message: unknown) => {
 
   const { seed, network } = message;
 
+  console.log("Creating DID document with seed", seed, "and network", network);
+
   try {
     const keyPair = Ed25519Keypair.deriveKeypairFromSeed(seed);
     const storage = getMemstorage();
@@ -98,7 +103,10 @@ bridge.addEventListener("create", async (message: unknown) => {
 
     const [unpublished] = await createDocumentForNetworkUsingKeyPair(storage, network, keyPair);
 
-    const { output: identity } = await identityClient.createIdentity(unpublished).finish().execute(identityClient);
+    const { output: identity } = await identityClient
+      .createIdentity(unpublished)
+      .finish()
+      .buildAndExecute(identityClient);
 
     const didDocument = identity.didDocument();
 
