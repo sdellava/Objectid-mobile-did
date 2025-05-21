@@ -7,6 +7,37 @@ import type { AppBridge } from "../../../AppBridge"; // Import the type 'appBrid
 import { Ed25519Keypair } from "@iota/iota-sdk/keypairs/ed25519";
 import { createDocumentForNetworkUsingKeyPair, getIdentityFromKeyPair, getMemstorage } from "./DIDutils";
 
+window.addEventListener("create", async (event: any) => {
+  const { seed, network } = event.detail;
+  try {
+    const keyPair = Ed25519Keypair.deriveKeypairFromSeed(seed);
+    const storage = getMemstorage();
+    const client = new IotaClient({ url: getFullnodeUrl(network) });
+    const identityClient = await getIdentityFromKeyPair(client, storage, keyPair, JwsAlgorithm.EdDSA);
+    const [unpublished] = await createDocumentForNetworkUsingKeyPair(storage, network, keyPair);
+    const { output: identity } = await identityClient.createIdentity(unpublished).finish().execute(identityClient);
+    const didDocument = identity.didDocument();
+    window.dispatchEvent(new CustomEvent("setCreatedDID", { detail: didDocument }));
+  } catch (error: any) {
+    console.error("Error creating DID document:", error);
+    alert(error.message ?? error.toString());
+  }
+});
+
+window.addEventListener("resolve", async (event: any) => {
+  const did = event.detail;
+  const network = "testnet";
+  try {
+    const client = new IotaClient({ url: getFullnodeUrl(network) });
+    const identityClientReadOnly = await IdentityClientReadOnly.create(client);
+    const iotaDid = IotaDID.fromAliasId(did, network);
+    const didDocument = await identityClientReadOnly.resolveDid(iotaDid);
+    window.dispatchEvent(new CustomEvent("setResolvedDID", { detail: didDocument }));
+  } catch (error) {
+    alert(error);
+  }
+});
+
 const bridge = linkBridge<AppBridge>({
   onReady: async () => {
     console.log("bridge is ready");

@@ -1,13 +1,80 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Identity Example App</title>
+    <script type="module" src="/src/main.ts"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        max-width: 500px;
+        margin: auto;
+      }
+      input,
+      button {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        box-sizing: border-box;
+        font-size: 16px;
+      }
+      button {
+        cursor: pointer;
+      }
+      textarea {
+        width: 100%;
+        height: 300px;
+        margin-top: 10px;
+      }
+    </style>
   </head>
   <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
+    <h1>Identity Example App</h1>
+
+    <input type="text" id="seed" placeholder="Seed (required for create)" />
+
+    <input type="text" id="did" placeholder="DID (required for resolve)" />
+
+    <button id="create">Create DID</button>
+
+    <button id="resolve">Resolve DID</button>
+
+    <textarea id="output" readonly placeholder="Output will appear here..."></textarea>
+
+    <script>
+      document.getElementById("create").onclick = () => {
+        const seed = document.getElementById("seed").value;
+        if (!seed) {
+          alert("Please enter a seed");
+          return;
+        }
+        window.dispatchEvent(new CustomEvent("create", { detail: { seed, network: "testnet" } }));
+      };
+
+      document.getElementById("resolve").onclick = () => {
+        const did = document.getElementById("did").value;
+        if (!did) {
+          alert("Please enter a DID");
+          return;
+        }
+        window.dispatchEvent(new CustomEvent("resolve", { detail: did }));
+      };
+
+      window.addEventListener("message", (event) => {
+        document.getElementById("output").value = JSON.stringify(event.data, null, 2);
+      });
+
+      window.addEventListener("setResolvedDID", (event) => {
+        document.getElementById("output").value = JSON.stringify(event.detail, null, 2);
+      });
+
+      window.addEventListener("setCreatedDID", (event) => {
+        document.getElementById("output").value = JSON.stringify(event.detail, null, 2);
+      });
+    </script>
   </body>
 </html>
