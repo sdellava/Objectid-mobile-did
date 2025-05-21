@@ -110,6 +110,8 @@ bridge.addEventListener("create", async (message: unknown) => {
 
     const didDocument = identity.didDocument();
 
+    console.log("DID document created:", didDocument);
+
     await bridge.setCreatedDID(JSON.stringify(didDocument, null, 2));
   } catch (error: any) {
     console.error("Error creating DID document:", error);

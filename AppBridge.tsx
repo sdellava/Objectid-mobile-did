@@ -27,10 +27,13 @@ export const appBridge = bridge<AppBridgeState>(({ set }) => ({
     set({ initialized: true });
   },
   async setResolvedDID(DID: string) {
-    set({ resolvedDID: DID });
+    set({ resolvedDID: "" }); // reset
+    setTimeout(() => {
+      set({ resolvedDID: DID }); // set dopo 10ms
+    }, 10);
   },
-  async setCreatedDID(DID: string) {
-    set({ createdDID: DID });
+  async setCreatedDID(DIDdocument: string) {
+    set({ createdDID: DIDdocument });
   },
   initialized: false,
   resolvedDID: "",
@@ -47,13 +50,13 @@ export type AppBridge = typeof appBridge;
 
 export const appPostMessageSchema = postMessageSchema({
   init: {
-    validate: (data) => data as string, // This is not recommended; please use validation libraries like zod or valibot.
+    validate: (data) => data as string,
   },
   resolve: {
-    validate: (data) => data as string, // This is not recommended; please use validation libraries like zod or valibot.
+    validate: (data) => data as string,
   },
   create: {
-    validate: (data) => data as CreateMessage, // This is not recommended; please use validation libraries like zod or valibot.
+    validate: (data) => data as CreateMessage,
   },
 });
 
