@@ -1,16 +1,15 @@
 // Main.tsx
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
-import { TextInput, Button, Text, Card } from 'react-native-paper';
+import React, { useEffect, useState } from "react";
+import { View, StyleSheet, ScrollView } from "react-native";
+import { TextInput, Button, Text, Card } from "react-native-paper";
 
-import { useBridge } from '@webview-bridge/react-native';
-import { appBridge } from './AppBridge';
-import IdentityWebView, {postMessage} from './IdentityWebView';
+import { useBridge } from "@webview-bridge/react-native";
+import { appBridge } from "./AppBridge";
+import IdentityWebView, { postMessage } from "./IdentityWebView";
 
 export default function Main() {
-
-  const [did, setDid] = useState('');
-  const [result, setResult] = useState<string>('');
+  const [did, setDid] = useState("0x12d98414a107efcc099e8954b12573a5f4d70701f5881cebbf543b59261ceecb");
+  const [result, setResult] = useState<string>("");
   const initialized = useBridge(appBridge, (state) => state.initialized);
   const resolvedDID = useBridge(appBridge, (state) => state.resolvedDID);
 
@@ -20,9 +19,9 @@ export default function Main() {
   }, [resolvedDID]);
 
   const handleResolve = async () => {
-    setResult('Resolving…'); // messaggio di attesa
+    setResult("Resolving…"); // messaggio di attesa
     try {
-      postMessage("resolve", did)
+      postMessage("resolve", did);
     } catch (e: any) {
       setResult(`Error: ${e.message ?? e.toString()}`);
     }
@@ -30,7 +29,7 @@ export default function Main() {
 
   return (
     <>
-      <IdentityWebView/>
+      <IdentityWebView />
       <ScrollView contentContainerStyle={styles.container}>
         <Text variant="headlineMedium" style={styles.heading}>
           Distributed Identifier (DID)
@@ -49,7 +48,7 @@ export default function Main() {
           mode="contained"
           onPress={handleResolve}
           loading={!initialized}
-          disabled={did.trim() === ''}
+          disabled={did.trim() === ""}
           style={styles.button}
         >
           Resolve
@@ -58,13 +57,7 @@ export default function Main() {
         <Card style={styles.resultCard}>
           <Card.Title title="Result" />
           <Card.Content>
-            <TextInput
-              value={result}
-              multiline
-              editable={false}
-              style={styles.resultInput}
-              mode="outlined"
-            />
+            <TextInput value={result} multiline editable={false} style={styles.resultInput} mode="outlined" />
           </Card.Content>
         </Card>
       </ScrollView>
@@ -76,10 +69,10 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 16,
-    justifyContent: 'flex-start',
+    justifyContent: "flex-start",
   },
   heading: {
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 24,
   },
   input: {
@@ -87,8 +80,8 @@ const styles = StyleSheet.create({
   },
   button: {
     marginBottom: 24,
-    alignSelf: 'center',
-    width: '50%',
+    alignSelf: "center",
+    width: "50%",
   },
   resultCard: {
     marginTop: 16,

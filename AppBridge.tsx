@@ -4,29 +4,37 @@ interface AppBridgeState extends Bridge {
   getMessage(): Promise<string>;
   setResolvedDID(DID: string): Promise<void>;
   setInitialized(): Promise<void>;
-  initialized: boolean,
-  resolvedDID: string,
-};
-
+  initialized: boolean;
+  resolvedDID: string;
+}
 
 // Register functions in the bridge object in your React Native code
+interface AppBridgeState extends Bridge {
+  getMessage(): Promise<string>;
+  setResolvedDID(DID: string): Promise<void>;
+  setInitialized(): Promise<void>;
+  initialized: boolean;
+  resolvedDID: string;
+  setCreatedDID(DID: string): Promise<void>; // 👈 AGGIUNGI QUESTA
+  createdDID: string; // 👈 AGGIUNGI QUESTA SE TI SERVE MEMORIZZARE IL DID
+}
+
 export const appBridge = bridge<AppBridgeState>(({ set }) => ({
   async getMessage() {
     return "Hello, I'm native";
   },
   async setInitialized() {
-    set({
-      initialized: true
-    })
+    set({ initialized: true });
   },
   async setResolvedDID(DID: string) {
-    set({
-      resolvedDID: DID
-    })
+    set({ resolvedDID: DID });
+  },
+  async setCreatedDID(DID: string) {
+    set({ createdDID: DID });
   },
   initialized: false,
   resolvedDID: "",
-  // ... Add more functions as needed
+  createdDID: "",
 }));
 
 // Export the bridge type to be used in the web application
@@ -37,7 +45,7 @@ export const appPostMessageSchema = postMessageSchema({
     validate: (data) => data as string, // This is not recommended; please use validation libraries like zod or valibot.
   },
   resolve: {
-    validate: (data) => data as string,  // This is not recommended; please use validation libraries like zod or valibot.
+    validate: (data) => data as string, // This is not recommended; please use validation libraries like zod or valibot.
   },
 });
 

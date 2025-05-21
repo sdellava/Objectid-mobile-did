@@ -1,9 +1,11 @@
 import { initSync } from "@iota/identity-wasm/web";
-import { IdentityClientReadOnly, IotaDID } from "@iota/identity-wasm/web";
+import { IdentityClientReadOnly, IotaDID, JwsAlgorithm } from "@iota/identity-wasm/web";
 import { getFullnodeUrl, IotaClient } from "@iota/iota-sdk/client";
 
 import { linkBridge } from "@webview-bridge/web";
 import type { AppBridge } from "../../../AppBridge"; // Import the type 'appBridge' declared in native
+import { Ed25519Keypair } from "@iota/iota-sdk/keypairs/ed25519";
+import { createDocumentForNetworkUsingKeyPair, getIdentityFromKeyPair, getMemstorage } from "./DIDutils";
 
 const bridge = linkBridge<AppBridge>({
   onReady: async () => {
@@ -40,10 +42,44 @@ bridge.addEventListener("resolve", async (message) => {
   }
 });
 
+interface CreateMessage {
+  seed: string;
+  network: string;
+}
+
+bridge.addEventListener("create", async (message: unknown) => {
+  function isCreateMessage(obj: any): obj is CreateMessage {
+    return obj && typeof obj === "object" && typeof obj.seed === "string" && typeof obj.network === "string";
+  }
+
+  if (!isCreateMessage(message)) {
+    console.error("Invalid message format for create event.");
+    return;
+  }
+
+  const { seed, network } = message;
+
+  try {
+    const keyPair = Ed25519Keypair.deriveKeypairFromSeed(seed);
+    const storage = getMemstorage();
+    const client = new IotaClient({ url: getFullnodeUrl(network) });
+    const identityClient = await getIdentityFromKeyPair(client, storage, keyPair, JwsAlgorithm.EdDSA);
+
+    const [unpublished] = await createDocumentForNetworkUsingKeyPair(storage, network, keyPair);
+
+    const { output: identity } = await identityClient.createIdentity(unpublished).finish().execute(identityClient);
+
+    const didDocument = identity.didDocument();
+
+    await bridge.setCreatedDID(JSON.stringify(didDocument, null, 2));
+  } catch (error: any) {
+    console.error("Error creating DID document:", error);
+    alert(error.message ?? error.toString());
+  }
+});
+
 bridge.getMessage().then((message) => console.log(message)); // Expecting "Hello, I'm native"
 
 //@ts-ignore
 const convertDataURIToBinary = (dataURI) =>
-  Uint8Array.from(window.atob(dataURI.replace(/^data[^,]+,/, "")), (v) =>
-    v.charCodeAt(0)
-  );
+  Uint8Array.from(window.atob(dataURI.replace(/^data[^,]+,/, "")), (v) => v.charCodeAt(0));
