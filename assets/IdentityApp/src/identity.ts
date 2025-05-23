@@ -1,4 +1,4 @@
-import { initSync } from "@iota/identity-wasm/web";
+import { init } from "@iota/identity-wasm/web";
 import { IdentityClientReadOnly, IotaDID, JwsAlgorithm } from "@iota/identity-wasm/web";
 import { getFullnodeUrl, IotaClient } from "@iota/iota-sdk/client";
 
@@ -51,7 +51,7 @@ const bridge = linkBridge<AppBridge>({
 
 bridge.addEventListener("init", async (message) => {
   try {
-    initSync(convertDataURIToBinary(message));
+    await init(message as string);
     bridge.setInitialized();
   } catch (error) {
     alert(error);
